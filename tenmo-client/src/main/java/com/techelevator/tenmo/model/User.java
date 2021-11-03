@@ -5,6 +5,9 @@ public class User {
 	private Integer id;
 	private String username;
 
+
+
+
 	public Integer getId() {
 		return id;
 	}

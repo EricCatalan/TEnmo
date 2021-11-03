@@ -2,7 +2,7 @@
 -- This script creates the database users and grants them the necessary permissions
 -- ********************************************************************************
 
-CREATE USER tenmo_owner
+Create USER tenmo_owner
 WITH PASSWORD 'tebucks';
 
 GRANT ALL
@@ -13,7 +13,7 @@ GRANT ALL
 ON ALL SEQUENCES IN SCHEMA public
 TO tenmo_owner;
 
-CREATE USER tenmo_appuser
+create USER tenmo_appuser
 WITH PASSWORD 'tebucks';
 
 GRANT SELECT, INSERT, UPDATE, DELETE
