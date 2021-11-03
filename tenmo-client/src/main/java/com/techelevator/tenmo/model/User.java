@@ -6,8 +6,6 @@ public class User {
 	private String username;
 
 
-
-
 	public Integer getId() {
 		return id;
 	}
