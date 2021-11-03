@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface TransferDAO {
 
-    public void sendMoneyFromAccount(Account myAccount, Account receiverAccount, int amount);
 
     public void requestMoneyFromUser(Account myAccount, Account senderAccount, int amount);
 

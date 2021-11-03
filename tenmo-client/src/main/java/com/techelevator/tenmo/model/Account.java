@@ -7,7 +7,7 @@ public class Account {
     private Integer userID;
     private Double balance = 1000.00;
 
-    public long getAccountID() {
+    public Integer getAccountID() {
         return accountID;
     }
 
@@ -36,4 +36,5 @@ public class Account {
         userID = this.userID;
 
     }
+    public Account(){}
 }

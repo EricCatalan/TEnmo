@@ -4,8 +4,9 @@ import com.techelevator.tenmo.model.Account;
 
 public interface AccountDAO {
 
-    public Account getAccountBalanceByUserId(int id);
+    public Double getAccountBalanceByUserId(int id);
 
-    public Account getAccountIDByUserID(int id);
+    public Integer getAccountIDByUserID(int id);
+    public void sendMoneyFromAccount(int amount, Integer myAccountID);
 
 }
