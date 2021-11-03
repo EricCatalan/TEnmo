@@ -1,4 +1,4 @@
-package com.techelevator.tenmo.DAO;
+package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;

@@ -1,13 +1,15 @@
-package com.techelevator.tenmo.DAO;
+package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
-import io.cucumber.java.bs.A;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.security.Principal;
 
+@Component
 public class JdbcAccountDAO implements AccountDAO{
 
     private final JdbcTemplate jdbcTemplate;
@@ -18,11 +20,11 @@ public class JdbcAccountDAO implements AccountDAO{
 
 
     @Override
-    public Double getAccountBalanceByUserId(int id) {
+    public Double getAccountBalanceByUser(Principal principal) {
        Account userAccount = null;
-       String sql = "SELECT a.account_id, a.user_id, a.balance FROM users u" + "join accounts a " + "on a.user_id = u.ser_id " +
-               "where u.user_id = ?";
-       SqlRowSet results = jdbcTemplate.queryForRowSet(sql,id);
+       String sql = "SELECT a.account_id, a.user_id, a.balance FROM users u " + "join accounts a " + "on a.user_id = u.user_id " +
+               "where u.username = ?";
+       SqlRowSet results = jdbcTemplate.queryForRowSet(sql, principal.getName());
        if(results.next()){
            userAccount = mapRowToAccount(results);
        }
