@@ -10,7 +10,7 @@ public interface AccountDAO {
 
     public Integer getAccountIDByUserID(int id);
 
-    public Account sendMoney(Principal principal,Double amount, Integer sendingToID);
+    public Account sendMoney(Double sendingAmount, Integer id, Principal principal);
 
     public Account removeMoney(Principal principal,Double amount, Integer myAccountID);
 }

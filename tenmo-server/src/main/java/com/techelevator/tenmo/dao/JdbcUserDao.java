@@ -47,7 +47,7 @@ public class JdbcUserDao implements UserDao {
         return users;
     }
     @Override
-    public User sendMoney(Principal principal,  Double amount,Integer sendingToID ) {
+    public User sendMoney(Double amount, Integer sendingToID, Principal principal) {
         User user = new User();
         String sql = "UPDATE accounts SET balance = balance + ?" + "where user_id = ? ;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, amount, sendingToID);

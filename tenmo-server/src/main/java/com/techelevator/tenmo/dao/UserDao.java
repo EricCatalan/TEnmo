@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface UserDao {
 
-    public User sendMoney(Principal principal, Double amount, Integer sendingToID);
+    public User sendMoney(Double amount, Integer sendingToID, Principal principal);
+
     List<User> findAll(Principal principal);
 
     User findByUsername(String username);

@@ -4,9 +4,12 @@ import com.techelevator.tenmo.dao.AccountDAO;
 import com.techelevator.tenmo.dao.TransferDAO;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -36,9 +39,12 @@ public class TenmoController {
         return userDao.findAll(principal);
     }
 
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
-    public User sendMoney(@Valid @PathVariable int id, @RequestBody Principal principal,Double sendingAmount ) {
-        return userDao.sendMoney(principal, sendingAmount, id);
+    @ResponseStatus(reason = "Approved")
+    @RequestMapping(value = "/transfer", method = RequestMethod.POST)
+    public void transferAmount(@Valid @RequestBody Transfer transfer, Principal principal) {
+        if (!transferDAO.transferMoney(transfer, principal)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer failed.");
+        }
     }
 
 }

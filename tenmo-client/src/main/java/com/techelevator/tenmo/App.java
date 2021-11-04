@@ -1,11 +1,9 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.tenmo.services.UserService;
 import com.techelevator.view.ConsoleService;
 import org.apiguardian.api.API;
@@ -32,6 +30,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private ConsoleService console;
     private AuthenticationService authenticationService;
     private UserService userService;
+    private TransferService transferService;
 
 //    private Account userAccount = new Account(,currentUser.getUser().getId());
     
@@ -105,8 +104,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("");
 		Integer sendingToID = console.getUserInputInteger("Enter ID of user you are sending to (0 to cancel)");
 		Double sendingAmount = console.getUserInputDouble("Enter amount");
+		Transfer transfer = new Transfer(2, currentUser.getUser().getId(), sendingToID, sendingAmount);
+		transferService.createTransfer(transfer, currentUser.getToken());
 //		userService.removeMoney(currentUser.getToken(), sendingAmount);
-		userService.sendMoney( sendingToID,sendingAmount,currentUser.getToken());
+//		userService.sendMoney(sendingToID ,sendingAmount, currentUser.getToken());
 
 
 

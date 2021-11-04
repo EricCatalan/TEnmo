@@ -30,17 +30,17 @@ public class UserService {
 
     public UserService(String url) {this.baseUrl = url;}
 
-    public void sendMoney(Integer sendingToID, Double sendingAmount,String authToken){
+    public void sendMoney(Integer sendingToID, Double sendingAmount, String authToken){
         try{
-            ResponseEntity<User> response = restTemplate.exchange(baseUrl + "users/{id}",HttpMethod.PUT, makeAuthEntity(authToken),User.class );
-        }catch (RestClientResponseException | ResourceAccessException e){}
+            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account/transfer",HttpMethod.PUT, makeAuthEntity(authToken),Account.class );
+        } catch (RestClientResponseException | ResourceAccessException e){}
 
     }
 
-    public void removeMoney(String authToken,Double sendingAmount){
+    public void removeMoney(String authToken, Double sendingAmount){
         try{
-            ResponseEntity<User> response = restTemplate.exchange(baseUrl+"users/{id}", HttpMethod.PUT, makeAuthEntity(authToken),User.class);
-        }catch(RestClientResponseException | ResourceAccessException e){}
+            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account/transfer", HttpMethod.PUT, makeAuthEntity(authToken), Account.class);
+        } catch(RestClientResponseException | ResourceAccessException e){}
     }
 
     public User[] listUsers (String authToken){
@@ -48,7 +48,7 @@ public class UserService {
         try{
         ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users/all", HttpMethod.GET,makeAuthEntity(authToken),User[].class);
         allUsers= response.getBody();
-        }catch(RestClientResponseException | ResourceAccessException e){}
+        } catch(RestClientResponseException | ResourceAccessException e){}
         return allUsers;
     }
     public User getUser(int id) {
