@@ -79,7 +79,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
-		System.out.println("Your current balance is: $" + userService.getAccountBalance(currentUser.getToken()));
+		System.out.println("Your current balance is: $" + String.format("%.2f",(userService.getAccountBalance(currentUser.getToken()))));
 	}
 
 	private void viewTransferHistory() {
@@ -97,16 +97,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("Users");
 		System.out.println("ID             Name");
 		System.out.println("--------------------------------");
-		for(User user: userService.listUsers(currentUser.getToken())){
-			System.out.println(user.getId()+"         "+user.getUsername() );
+		for(User user: userService.listUsers(currentUser.getToken()) ){
+			System.out.println(user.getId()+"            "+user.getUsername() );
 		}
 		System.out.println("---------------");
 		System.out.println("");
 		System.out.println("");
 		Integer sendingToID = console.getUserInputInteger("Enter ID of user you are sending to (0 to cancel)");
 		Double sendingAmount = console.getUserInputDouble("Enter amount");
-		userService.sendMoney(currentUser.getToken(), sendingToID,sendingAmount);
-		userService.removeMoney(currentUser.getToken(), sendingAmount);
+//		userService.removeMoney(currentUser.getToken(), sendingAmount);
+		userService.sendMoney( sendingToID,sendingAmount,currentUser.getToken());
+
+
+
 	}
 
 	private void requestBucks() {

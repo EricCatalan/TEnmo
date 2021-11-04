@@ -54,13 +54,24 @@ public class JdbcAccountDAO implements AccountDAO{
         return account;
     }
 
-    public void sendMoneyFromAccount( int amount, Integer myAccountID ) {
+    public Account sendMoney( Principal principal,Double amount, Integer sendingToID ) {
+        Account account = new Account();
+        String sql = "UPDATE accounts SET balance = balance + ?" + "where account_id = ? ;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, amount, sendingToID);
+        if(results.next()){
+            account = mapRowToAccount(results);
+        }
+        return account;
+    }
+
+    public Account removeMoney( Principal principal,Double amount, Integer myAccountID ) {
         Account account = new Account();
         String sql = "UPDATE accounts SET balance = balance - ?" + "where account_id = ? ;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, amount, myAccountID);
         if(results.next()){
             account = mapRowToAccount(results);
         }
+        return account;
     }
 
 }

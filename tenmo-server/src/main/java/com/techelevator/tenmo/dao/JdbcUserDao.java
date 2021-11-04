@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,15 +36,25 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<User> findAll(Principal principal) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT user_id, username, password_hash FROM users;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        String sql = "SELECT user_id, username, password_hash FROM users" + " Where username != ? ";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, principal.getName());
         while(results.next()) {
             User user = mapRowToUser(results);
             users.add(user);
         }
         return users;
+    }
+    @Override
+    public User sendMoney(Principal principal,  Double amount,Integer sendingToID ) {
+        User user = new User();
+        String sql = "UPDATE accounts SET balance = balance + ?" + "where user_id = ? ;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, amount, sendingToID);
+        if(results.next()){
+            user = mapRowToUser(results);
+        }
+        return user;
     }
 
     @Override

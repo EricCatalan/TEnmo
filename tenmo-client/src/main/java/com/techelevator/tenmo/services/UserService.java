@@ -30,16 +30,16 @@ public class UserService {
 
     public UserService(String url) {this.baseUrl = url;}
 
-    public void sendMoney(String authToken,Integer sendingToID, Double sendingAmount){
+    public void sendMoney(Integer sendingToID, Double sendingAmount,String authToken){
         try{
-            ResponseEntity<User> response = restTemplate.exchange(baseUrl + "users/{id}/account",HttpMethod.PUT, makeAuthEntity(authToken),User.class );
+            ResponseEntity<User> response = restTemplate.exchange(baseUrl + "users/{id}",HttpMethod.PUT, makeAuthEntity(authToken),User.class );
         }catch (RestClientResponseException | ResourceAccessException e){}
 
     }
 
     public void removeMoney(String authToken,Double sendingAmount){
         try{
-            ResponseEntity<User> response = restTemplate.exchange(baseUrl+"users/{id}/account", HttpMethod.PUT, makeAuthEntity(authToken),User.class);
+            ResponseEntity<User> response = restTemplate.exchange(baseUrl+"users/{id}", HttpMethod.PUT, makeAuthEntity(authToken),User.class);
         }catch(RestClientResponseException | ResourceAccessException e){}
     }
 

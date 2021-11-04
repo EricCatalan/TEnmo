@@ -1,10 +1,12 @@
 package com.techelevator.tenmo.model;
 
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 
 public class Account {
     private Integer accountID;
     private Integer userID;
+    @Min(0)
     private Double balance = 1000.00;
 
     public Integer getAccountID() {
@@ -37,4 +39,5 @@ public class Account {
 
     }
     public Account(){}
+
 }
