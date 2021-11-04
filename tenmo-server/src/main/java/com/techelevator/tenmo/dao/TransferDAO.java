@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TransferDAO {
 
-    public boolean transferMoney(Transfer transfer, Principal principal);
+    public Transfer createTransfer(Transfer transfer, Principal principal);
 
     public void requestMoneyFromUser(Account senderAccount, int amount);
 

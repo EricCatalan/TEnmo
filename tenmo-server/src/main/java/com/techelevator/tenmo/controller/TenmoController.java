@@ -40,11 +40,10 @@ public class TenmoController {
     }
 
     @ResponseStatus(reason = "Approved")
-    @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public void transferAmount(@Valid @RequestBody Transfer transfer, Principal principal) {
-        if (!transferDAO.transferMoney(transfer, principal)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer failed.");
-        }
+    @RequestMapping(value = "/transfers", method = RequestMethod.POST)
+    public Transfer transferAmount(@Valid @RequestBody Transfer transfer, Principal principal) {
+
+    return transferDAO.createTransfer(transfer, principal);
     }
 
 }
