@@ -30,23 +30,23 @@ public class UserService {
 
     public UserService(String url) {this.baseUrl = url;}
 
-    public void sendMoney(Integer sendingToID, Double sendingAmount){
+    public void sendMoney(String authToken,Integer sendingToID, Double sendingAmount){
         try{
-            ResponseEntity<User> response = restTemplate.exchange(baseUrl + "users/{id}/account",HttpMethod.PUT, makeAuthEntity(),User.class );
+            ResponseEntity<User> response = restTemplate.exchange(baseUrl + "users/{id}/account",HttpMethod.PUT, makeAuthEntity(authToken),User.class );
         }catch (RestClientResponseException | ResourceAccessException e){}
 
     }
 
-    public void removeMoney(Double sendingAmount){
+    public void removeMoney(String authToken,Double sendingAmount){
         try{
-            ResponseEntity<User> response = restTemplate.exchange(baseUrl+"users/{id}/account", HttpMethod.PUT, makeAuthEntity(),User.class);
+            ResponseEntity<User> response = restTemplate.exchange(baseUrl+"users/{id}/account", HttpMethod.PUT, makeAuthEntity(authToken),User.class);
         }catch(RestClientResponseException | ResourceAccessException e){}
     }
 
-    public User[] listUsers (){
+    public User[] listUsers (String authToken){
         User[] allUsers = null;
         try{
-        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users/all", HttpMethod.GET,makeAuthEntity(),User[].class);
+        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users/all", HttpMethod.GET,makeAuthEntity(authToken),User[].class);
         allUsers= response.getBody();
         }catch(RestClientResponseException | ResourceAccessException e){}
         return allUsers;
@@ -63,19 +63,19 @@ public class UserService {
         return user;
     }
 //Going to have to update URL address
-    public Double getAccountBalance(){
-        Account account = null;
+    public Double getAccountBalance(String authToken){
+        Double accountBalance = 0.00;
         try{
-            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "balance", HttpMethod.GET, makeAuthEntity(), Account.class);
-            account = response.getBody();
+            ResponseEntity<Double> response = restTemplate.exchange(baseUrl + "balance", HttpMethod.GET, makeAuthEntity(authToken), Double.class);
+            accountBalance = response.getBody();
         }catch(RestClientResponseException | ResourceAccessException e){
 
         }
 
-        return account.getBalance();
+        return accountBalance;
     }
 
-    private HttpEntity<Void> makeAuthEntity() {
+    private HttpEntity<Void> makeAuthEntity(String authToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);
         return new HttpEntity<>(headers);
