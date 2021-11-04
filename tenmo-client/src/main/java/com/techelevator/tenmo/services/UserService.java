@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.DAO.JdbcUserDAO;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.User;
@@ -10,6 +11,9 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -21,10 +25,32 @@ public class UserService {
     AuthenticatedUser authenticatedUser = new AuthenticatedUser();
 
     private String authToken = authenticatedUser.getToken();
+    private JdbcUserDAO jdbcUserDAO;
 
 
     public UserService(String url) {this.baseUrl = url;}
 
+    public void sendMoney(Integer sendingToID, Double sendingAmount){
+        try{
+            ResponseEntity<User> response = restTemplate.exchange(baseUrl + "users/{id}/account",HttpMethod.PUT, makeAuthEntity(),User.class );
+        }catch (RestClientResponseException | ResourceAccessException e){}
+
+    }
+
+    public void removeMoney(Double sendingAmount){
+        try{
+            ResponseEntity<User> response = restTemplate.exchange(baseUrl+"users/{id}/account", HttpMethod.PUT, makeAuthEntity(),User.class);
+        }catch(RestClientResponseException | ResourceAccessException e){}
+    }
+
+    public User[] listUsers (){
+        User[] allUsers = null;
+        try{
+        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users/all", HttpMethod.GET,makeAuthEntity(),User[].class);
+        allUsers= response.getBody();
+        }catch(RestClientResponseException | ResourceAccessException e){}
+        return allUsers;
+    }
     public User getUser(int id) {
         User user = null;
 
