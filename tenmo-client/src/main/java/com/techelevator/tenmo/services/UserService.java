@@ -1,10 +1,7 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.DAO.JdbcUserDAO;
-import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import org.springframework.http.*;
 
 import org.springframework.web.client.ResourceAccessException;
@@ -31,19 +28,6 @@ public class UserService {
 
     public UserService(String url) {this.baseUrl = url;}
 
-//    public void sendMoney(Integer sendingToID, Double sendingAmount, String authToken){
-//        try{
-//            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account/transfer",HttpMethod.PUT, makeAuthEntity(authToken),Account.class );
-//        } catch (RestClientResponseException | ResourceAccessException e){}
-//
-//    }
-//
-//    public void removeMoney(String authToken, Double sendingAmount){
-//        try{
-//            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account/transfer", HttpMethod.PUT, makeAuthEntity(authToken), Account.class);
-//        } catch(RestClientResponseException | ResourceAccessException e){}
-//    }
-
     public List<User> listUsers(String authToken) {
         User[] allUsers = null;
         try{
@@ -54,35 +38,9 @@ public class UserService {
         return Arrays.asList(allUsers);
     }
 
-    public User getUser(int id) {
-        User user = null;
-
-        try{
-            user = restTemplate.getForObject(baseUrl + id, User.class);
-        } catch(ResourceAccessException ex) {
-            System.out.println("The user could not be found");
-        }
-
-        return user;
-    }
-
     public List<Account> listUserAccounts(String authToken) {
         Account[] allAccounts = restTemplate.exchange(baseUrl + "accounts", HttpMethod.GET, makeAuthEntity(authToken), Account[].class).getBody();
-//        try {
-//            ResponseEntity<Account[]> response =
-//            allAccounts = response.getBody();
-//        } catch(RestClientResponseException | ResourceAccessException e){}
-
         return Arrays.asList(allAccounts);
-    }
-
-    public Account getAccountByUserID(Integer userID, List<Account> accountList) {
-        Account account = null;
-        for(Account currentAccount: accountList) {
-            if (userID == currentAccount.getUserID()) {
-                account = currentAccount;
-            }
-        } return account;
     }
 
     public Double getAccountBalance(String authToken){
@@ -95,6 +53,37 @@ public class UserService {
         }
 
         return accountBalance;
+    }
+
+    public User getUser(Integer userId, List<User> userList) {
+        User user = null;
+
+        for(User currentUser: userList) {
+            if(userId.intValue() == currentUser.getId().intValue()) {
+                user = currentUser;
+            }
+        }
+
+        return user;
+    }
+
+    public Account getAccountByUserID(Integer userID, List<Account> accountList) {
+        Account account = null;
+        for(Account currentAccount: accountList) {
+            if (userID == currentAccount.getUserID()) {
+                account = currentAccount;
+            }
+        } return account;
+    }
+
+    public Integer getUserIDByAccountID(Integer accountID, List<Account> accountList) {
+        Integer userID = 0;
+        for(Account account: accountList) {
+            if(account.getAccountID().intValue() == accountID.intValue()) {
+                userID = account.getUserID();
+            }
+        }
+        return userID;
     }
 
     private HttpEntity<Void> makeAuthEntity(String authToken) {

@@ -87,7 +87,26 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		for(Transfer transfer: transferService.listUserTransfers(currentUser.getToken())) {
+			int userId = userService.getUserIDByAccountID(transfer.getAccountToID(), userService.listUserAccounts(currentUser.getToken()));
+
+			if(transferService.listUserTransfers(currentUser.getToken()).size() == 0) {
+				System.out.println("You have no transfer history");
+			}
+
+			else if (transfer.getTransferTypeID() == 2) {
+				System.out.println(transfer.getTransferID());
+				System.out.println("To: " + userService.getUser(userId, userService.listUsers(currentUser.getToken())).getUsername());
+				System.out.println("$" + transfer.getAmount());
+			}
+
+			else if (transfer.getTransferTypeID() == 1) {
+				System.out.println(transfer.getTransferID());
+				System.out.println("From: " + userService.getUser(userService.getUserIDByAccountID(transfer.getAccountFromID(), userService.listUserAccounts(currentUser.getToken())), userService.listUsers(currentUser.getToken())).getUsername());
+				System.out.println("$" + transfer.getAmount());
+
+			}
+		}
 		
 	}
 
@@ -111,7 +130,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		Double sendingAmount = console.getUserInputDouble("Enter amount");
 		Account accountFrom = userService.getAccountByUserID(currentUser.getUser().getId(), accountList);
 		Account accountTo = userService.getAccountByUserID(sendingToID, accountList);
-		Transfer transfer = new Transfer(2, accountFrom.getAccountID(), accountTo.getAccountID(), sendingAmount);
+		Transfer transfer = new Transfer(2, 2, accountFrom.getAccountID(), accountTo.getAccountID(), sendingAmount);
 		transferService.createTransfer(transfer, currentUser.getToken());
 	}
 

@@ -13,7 +13,7 @@ public interface TransferDAO {
 
     public void requestMoneyFromUser(Account senderAccount, int amount);
 
-    public List<Transfer> listTransfers();
+    public List<Transfer> listUserTransfers(Principal principal);
 
     public Transfer getTransferDetailsByID(int id);
 

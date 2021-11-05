@@ -9,12 +9,14 @@ public class Transfer {
     private Integer accountToID;
     private Double amount;
 
-    public Transfer(Integer transferTypeID, Integer accountFromID, Integer accountToID, Double amount){
+    public Transfer(){};
+
+    public Transfer(Integer transferTypeID, Integer transferStatusID, Integer accountFromID, Integer accountToID, Double amount){
         this.transferTypeID = transferTypeID;
         this.accountFromID = accountFromID;
         this.accountToID = accountToID;
         this.amount = amount;
-        this.transferStatusID = 2;
+        this.transferStatusID = transferStatusID;
     }
 
     public Integer getTransferID() {
@@ -25,12 +27,12 @@ public class Transfer {
         this.transferID = transferID;
     }
 
-    public Integer getTransferType() {
+    public Integer getTransferTypeID() {
         return transferTypeID;
     }
 
-    public void setTransferType(Integer transferType) {
-        this.transferTypeID = transferType;
+    public void setTransferTypeID(Integer transferTypeID) {
+        this.transferTypeID = transferTypeID;
     }
 
     public Integer getTransferStatusID() {
