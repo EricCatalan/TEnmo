@@ -54,15 +54,14 @@ public class JdbcAccountDAO implements AccountDAO{
         return account;
     }
 
-    public void sendMoney(Double sendingAmount, Integer receiverUserid) {
-        String sql = "UPDATE accounts SET balance = balance + ?" + "where user_id = ? ;";
-        jdbcTemplate.update(sql, sendingAmount, receiverUserid);
+    public void sendMoney(Double sendingAmount, Integer receiverAccountid) {
+        String sql = "UPDATE accounts SET balance = balance + ?" + " where account_id = ? ;";
+        jdbcTemplate.update(sql, sendingAmount, receiverAccountid);
     }
 
     public void removeMoney(Double removeAmount, Principal principal) {
-        String sql = "UPDATE a.accounts SET a.balance = a.balance - ?" +
-                    " FROM accounts a INNER JOIN users u ON u.user_id = a.user_id" +
-                    " WHERE username = ? ;";
+        String sql = "UPDATE accounts SET balance = balance - ?" +
+                    " WHERE user_id = (SELECT user_id FROM users WHERE username = ?);";
         jdbcTemplate.update(sql, removeAmount, principal.getName());
     }
 

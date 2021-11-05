@@ -26,10 +26,11 @@ public class JdbcTransferDAO implements TransferDAO {
     public void createTransfer(Transfer transfer, Principal principal) {
 
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                "VALUES (?, ?, ?, ?, ?) RETURNING transfer_id";
+                "VALUES (?, ?, ?, ?, ?)";
 
-        Integer transferID = jdbcTemplate.update(sql,transfer.getTransferTypeID(), transfer.getTransferStatusID(), transfer.getAccountFromID(), transfer.getAccountToID(), transfer.getAmount());
-        transfer.setTransferID(transferID);
+         jdbcTemplate.update(sql,2, transfer.getTransferStatusID(), transfer.getAccountFromID(), transfer.getAccountToID(), transfer.getAmount());
+        // transfer.setTransferID(transferID);
+        // We set jdbctemp to transferID, returning transferID in sql statement
         accountDAO.sendMoney(transfer.getAmount(), transfer.getAccountToID());
         accountDAO.removeMoney(transfer.getAmount(), principal);
     }

@@ -46,10 +46,14 @@ public class TenmoController {
         return accountDAO.listAccounts();
     }
 
-    @ResponseStatus(reason = "Approved")
+    //@ResponseStatus(code = HttpStatus.ACCEPTED, reason = "Approved")
     @RequestMapping(value = "/transfers", method = RequestMethod.POST)
     public void makeTransfer(@Valid @RequestBody Transfer transfer, Principal principal) {
-        transferDAO.createTransfer(transfer, principal);
+        try {
+            transferDAO.createTransfer(transfer, principal);
+        }catch(Exception ex){
+            System.out.println(ex.getStackTrace());
+        }
     }
 
 }

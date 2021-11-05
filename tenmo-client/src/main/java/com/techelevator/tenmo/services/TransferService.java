@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Transfer;
 import net.minidev.json.JSONUtil;
+import okhttp3.Request;
 import org.springframework.http.*;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -14,12 +15,14 @@ public class TransferService {
     RestTemplate restTemplate = new RestTemplate();
 
     public TransferService(String baseUrl) {
-        this.baseUrl = baseUrl + "transfers/";
+        this.baseUrl = baseUrl + "transfers";
     }
 
     public void createTransfer(Transfer transfer, String authToken) {
         HttpEntity<Transfer> entity = new HttpEntity<>(transfer, authHeaders(authToken));
-        restTemplate.exchange(baseUrl, HttpMethod.POST, entity, Transfer.class);
+        ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl, HttpMethod.POST, entity, Transfer.class);
+
+        int x = 1;
     }
 
     private HttpHeaders authHeaders(String authToken) {
