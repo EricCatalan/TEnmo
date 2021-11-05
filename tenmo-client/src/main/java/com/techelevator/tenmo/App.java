@@ -9,6 +9,7 @@ import com.techelevator.view.ConsoleService;
 import org.apiguardian.api.API;
 
 import java.security.Principal;
+import java.util.List;
 
 public class App {
 
@@ -31,6 +32,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticationService authenticationService;
     private UserService userService;
     private TransferService transferService;
+    private List<Account> accountList;
 
 //    private Account userAccount = new Account(,currentUser.getUser().getId());
     
@@ -52,6 +54,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("*********************");
 		
 		registerAndLogin();
+		transferService = new TransferService(API_BASE_URL);
+		accountList = userService.listUserAccounts(currentUser.getToken());
 		mainMenu();
 	}
 
@@ -92,11 +96,11 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-		System.out.println("--------------------------------");
+    	System.out.println("--------------------------------");
 		System.out.println("Users");
 		System.out.println("ID             Name");
 		System.out.println("--------------------------------");
-		for(User user: userService.listUsers(currentUser.getToken()) ){
+		for(User user: userService.listUsers(currentUser.getToken())){
 			System.out.println(user.getId()+"            "+user.getUsername() );
 		}
 		System.out.println("---------------");
@@ -104,13 +108,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("");
 		Integer sendingToID = console.getUserInputInteger("Enter ID of user you are sending to (0 to cancel)");
 		Double sendingAmount = console.getUserInputDouble("Enter amount");
-		Transfer transfer = new Transfer(2, currentUser.getUser().getId(), sendingToID, sendingAmount);
+		Account accountFrom = userService.getAccountByUserID(currentUser.getUser().getId(), accountList);
+		Account accountTo = userService.getAccountByUserID(sendingToID, accountList);
+		Transfer transfer = new Transfer(2, accountFrom.getAccountID(), accountTo.getAccountID(), sendingAmount);
 		transferService.createTransfer(transfer, currentUser.getToken());
-//		userService.removeMoney(currentUser.getToken(), sendingAmount);
-//		userService.sendMoney(sendingToID ,sendingAmount, currentUser.getToken());
-
-
-
 	}
 
 	private void requestBucks() {

@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDAO;
+import com.techelevator.tenmo.dao.JdbcAccountDAO;
 import com.techelevator.tenmo.dao.TransferDAO;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
@@ -20,10 +21,10 @@ import java.util.List;
 public class TenmoController {
 
     private UserDao userDao;
-    private AccountDAO accountDAO;
+    private JdbcAccountDAO accountDAO;
     private TransferDAO transferDAO;
 
-    public TenmoController(UserDao userDao, AccountDAO accountDAO, TransferDAO transferDAO) {
+    public TenmoController(UserDao userDao, JdbcAccountDAO accountDAO, TransferDAO transferDAO) {
         this.userDao = userDao;
         this.accountDAO = accountDAO;
         this.transferDAO = transferDAO;
@@ -36,14 +37,19 @@ public class TenmoController {
 
     @RequestMapping(value= "/users/all", method = RequestMethod.GET)
     public List<User> userList (Principal principal){
-        return userDao.findAll(principal);
+        return userDao.findAllUsers(principal);
+    }
+
+    @RequestMapping(path = "/accounts", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Account> accountList() {
+        return accountDAO.listAccounts();
     }
 
     @ResponseStatus(reason = "Approved")
     @RequestMapping(value = "/transfers", method = RequestMethod.POST)
-    public Transfer transferAmount(@Valid @RequestBody Transfer transfer, Principal principal) {
-
-    return transferDAO.createTransfer(transfer, principal);
+    public void makeTransfer(@Valid @RequestBody Transfer transfer, Principal principal) {
+        transferDAO.createTransfer(transfer, principal);
     }
 
 }

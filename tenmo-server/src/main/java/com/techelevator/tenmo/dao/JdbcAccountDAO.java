@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JdbcAccountDAO implements AccountDAO{
@@ -33,17 +35,15 @@ public class JdbcAccountDAO implements AccountDAO{
     }
 
     @Override
-    public Integer getAccountIDByUserID(int id) {
-        Account userAccount = null;
-        String sql = "SELECT a.account_id, a.user_id, a.balance FROM users u" + "join accounts a " + "on a.user_id = u.ser_id " +
-                "where u.user_id = ?";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql,id);
-        if(results.next()){
-            userAccount = mapRowToAccount(results);
+    public List<Account> listAccounts() {
+        List<Account> accountsList = new ArrayList<>();
+        String sql = "SELECT account_id, user_id, balance FROM accounts";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while(results.next()){
+            Account account = mapRowToAccount(results);
+            accountsList.add(account);
         }
-        return userAccount.getAccountID();
-
-
+        return accountsList;
     }
 
     private Account mapRowToAccount (SqlRowSet results){
@@ -54,24 +54,16 @@ public class JdbcAccountDAO implements AccountDAO{
         return account;
     }
 
-    public Account sendMoney(Double sendingAmount, Integer id, Principal principal) {
-        Account account = new Account();
+    public void sendMoney(Double sendingAmount, Integer receiverUserid) {
         String sql = "UPDATE accounts SET balance = balance + ?" + "where user_id = ? ;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, sendingAmount, id);
-        if(results.next()){
-            account = mapRowToAccount(results);
-        }
-        return account;
+        jdbcTemplate.update(sql, sendingAmount, receiverUserid);
     }
 
-    public Account removeMoney( Principal principal,Double amount, Integer myAccountID ) {
-        Account account = new Account();
-        String sql = "UPDATE accounts SET balance = balance - ?" + "where account_id = ? ;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, amount, myAccountID);
-        if(results.next()){
-            account = mapRowToAccount(results);
-        }
-        return account;
+    public void removeMoney(Double removeAmount, Principal principal) {
+        String sql = "UPDATE a.accounts SET a.balance = a.balance - ?" +
+                    " FROM accounts a INNER JOIN users u ON u.user_id = a.user_id" +
+                    " WHERE username = ? ;";
+        jdbcTemplate.update(sql, removeAmount, principal.getName());
     }
 
 }

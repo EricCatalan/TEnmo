@@ -3,8 +3,8 @@ package com.techelevator.tenmo.model;
 public class Transfer {
 
     private Integer transferID;
-    private Integer transferType;
-    private Integer transferStatus;
+    private Integer transferTypeID;
+    private Integer transferStatusID;
     private Integer accountFromID;
     private Integer accountToID;
     private Double amount;
@@ -19,20 +19,20 @@ public class Transfer {
         this.transferID = transferID;
     }
 
-    public Integer getTransferType() {
-        return transferType;
+    public Integer getTransferTypeID() {
+        return transferTypeID;
     }
 
-    public void setTransferType(Integer transferType) {
-        this.transferType = transferType;
+    public void setTransferTypeID(Integer transferTypeID) {
+        this.transferTypeID = transferTypeID;
     }
 
-    public Integer getTransferStatus() {
-        return transferStatus;
+    public Integer getTransferStatusID() {
+        return transferStatusID;
     }
 
-    public void setTransferStatus(Integer transferStatus) {
-        this.transferStatus = transferStatus;
+    public void setTransferStatusID(Integer transferStatusID) {
+        this.transferStatusID = transferStatusID;
     }
 
     public Integer getAccountFromID() {

@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -30,27 +31,29 @@ public class UserService {
 
     public UserService(String url) {this.baseUrl = url;}
 
-    public void sendMoney(Integer sendingToID, Double sendingAmount, String authToken){
-        try{
-            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account/transfer",HttpMethod.PUT, makeAuthEntity(authToken),Account.class );
-        } catch (RestClientResponseException | ResourceAccessException e){}
+//    public void sendMoney(Integer sendingToID, Double sendingAmount, String authToken){
+//        try{
+//            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account/transfer",HttpMethod.PUT, makeAuthEntity(authToken),Account.class );
+//        } catch (RestClientResponseException | ResourceAccessException e){}
+//
+//    }
+//
+//    public void removeMoney(String authToken, Double sendingAmount){
+//        try{
+//            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account/transfer", HttpMethod.PUT, makeAuthEntity(authToken), Account.class);
+//        } catch(RestClientResponseException | ResourceAccessException e){}
+//    }
 
-    }
-
-    public void removeMoney(String authToken, Double sendingAmount){
-        try{
-            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account/transfer", HttpMethod.PUT, makeAuthEntity(authToken), Account.class);
-        } catch(RestClientResponseException | ResourceAccessException e){}
-    }
-
-    public User[] listUsers (String authToken){
+    public List<User> listUsers(String authToken) {
         User[] allUsers = null;
         try{
         ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users/all", HttpMethod.GET,makeAuthEntity(authToken),User[].class);
-        allUsers= response.getBody();
+        allUsers = response.getBody();
         } catch(RestClientResponseException | ResourceAccessException e){}
-        return allUsers;
+
+        return Arrays.asList(allUsers);
     }
+
     public User getUser(int id) {
         User user = null;
 
@@ -62,7 +65,26 @@ public class UserService {
 
         return user;
     }
-//Going to have to update URL address
+
+    public List<Account> listUserAccounts(String authToken) {
+        Account[] allAccounts = restTemplate.exchange(baseUrl + "accounts", HttpMethod.GET, makeAuthEntity(authToken), Account[].class).getBody();
+//        try {
+//            ResponseEntity<Account[]> response =
+//            allAccounts = response.getBody();
+//        } catch(RestClientResponseException | ResourceAccessException e){}
+
+        return Arrays.asList(allAccounts);
+    }
+
+    public Account getAccountByUserID(Integer userID, List<Account> accountList) {
+        Account account = null;
+        for(Account currentAccount: accountList) {
+            if (userID == currentAccount.getUserID()) {
+                account = currentAccount;
+            }
+        } return account;
+    }
+
     public Double getAccountBalance(String authToken){
         Double accountBalance = 0.00;
         try{

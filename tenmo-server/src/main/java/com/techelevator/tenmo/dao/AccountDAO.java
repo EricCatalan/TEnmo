@@ -3,14 +3,15 @@ package com.techelevator.tenmo.dao;
 import com.techelevator.tenmo.model.Account;
 
 import java.security.Principal;
+import java.util.List;
 
 public interface AccountDAO {
 
     public Double getAccountBalanceByUser(Principal principal);
 
-    public Integer getAccountIDByUserID(int id);
+    public List<Account> listAccounts();
 
-    public Account sendMoney(Double sendingAmount, Integer id, Principal principal);
+    public void sendMoney(Double sendingAmount, Integer receiverUserid);
 
-    public Account removeMoney(Principal principal,Double amount, Integer myAccountID);
+    public void removeMoney(Double removeAmount, Principal principal);
 }

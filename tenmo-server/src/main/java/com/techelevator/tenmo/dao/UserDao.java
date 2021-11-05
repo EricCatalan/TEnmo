@@ -11,7 +11,7 @@ public interface UserDao {
 
     public User sendMoney(Double amount, Integer sendingToID, Principal principal);
 
-    List<User> findAll(Principal principal);
+    List<User> findAllUsers(Principal principal);
 
     User findByUsername(String username);
 
