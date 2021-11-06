@@ -13,6 +13,8 @@ public interface UserDao {
 
     List<User> findAllUsers(Principal principal);
 
+    List<User> findAllOtherUsers(Principal principal);
+
     User findByUsername(String username);
 
     int findIdByUsername(String username);

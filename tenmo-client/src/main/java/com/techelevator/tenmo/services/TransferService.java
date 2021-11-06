@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import net.minidev.json.JSONUtil;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
@@ -29,6 +30,11 @@ public class TransferService {
         ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfers/execute", HttpMethod.POST, entity, Transfer.class);
     }
 
+    public void requestTransfer(Transfer transfer, String authToken) {
+        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, authHeaders(authToken));
+        ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfers/request", HttpMethod.POST, entity, Transfer.class);
+    }
+
     public List<Transfer> listUserTransfers(String authToken) {
         HttpEntity<Transfer> entity = new HttpEntity<>(authHeaders(authToken));
         Transfer[] allTransfers = null;
@@ -55,6 +61,21 @@ public class TransferService {
         HttpEntity<Transfer> entity = new HttpEntity<>(authHeaders(authToken));
         Transfer[] allTransfers = restTemplate.exchange(baseUrl +"transfers", HttpMethod.GET,entity, Transfer[].class).getBody();
         return Arrays.asList(allTransfers);
+    }
+
+    public List<Transfer> listPendingTransfers(String authToken){
+        HttpEntity<Transfer> entity = new HttpEntity<>(authHeaders(authToken));
+        Transfer[] allTransfers = restTemplate.exchange(baseUrl +"transfers/pending", HttpMethod.GET,entity, Transfer[].class).getBody();
+        return Arrays.asList(allTransfers);
+    }
+
+    public boolean isTransferIdValid(Integer transferId, List<Transfer> transferList) {
+        boolean isValid = false;
+        for(Transfer currentTransfer: transferList) {
+            if(currentTransfer.getTransferID().intValue() == transferId.intValue()) {
+                return isValid = true;
+            }
+        } return isValid;
     }
 
     private HttpHeaders authHeaders(String authToken) {

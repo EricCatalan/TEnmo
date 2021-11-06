@@ -11,10 +11,15 @@ public interface TransferDAO {
 
     public void createTransfer(Transfer transfer, Principal principal);
 
-    public void requestMoneyFromUser(Account senderAccount, int amount);
+    public void requestTransfer(Transfer transfer, Principal principal);
 
     public List<Transfer> listUserTransfers(Principal principal);
 
+    public List<Transfer> listPendingTransfers(Principal principal);
+
     public Transfer getTransferDetailsByID(int id, Principal principal);
+
     public List<Transfer> listAllTransfers();
+
+
 }

@@ -28,14 +28,24 @@ public class UserService {
 
     public UserService(String url) {this.baseUrl = url;}
 
-    public List<User> listUsers(String authToken) {
+    public List<User> listAllUsers(String authToken) {
         User[] allUsers = null;
-        try{
-        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users/all", HttpMethod.GET,makeAuthEntity(authToken),User[].class);
-        allUsers = response.getBody();
-        } catch(RestClientResponseException | ResourceAccessException e){}
+        try {
+            ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users/all", HttpMethod.GET,makeAuthEntity(authToken),User[].class);
+            allUsers = response.getBody();
+        } catch(RestClientResponseException | ResourceAccessException e) {}
 
         return Arrays.asList(allUsers);
+    }
+
+    public List<User> listOtherUsers(String authToken) {
+        User[] allOtherUsers = null;
+        try{
+        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users/all_non_active", HttpMethod.GET,makeAuthEntity(authToken),User[].class);
+        allOtherUsers = response.getBody();
+        } catch(RestClientResponseException | ResourceAccessException e){}
+
+        return Arrays.asList(allOtherUsers);
     }
 
     public List<Account> listUserAccounts(String authToken) {
@@ -74,6 +84,15 @@ public class UserService {
                 account = currentAccount;
             }
         } return account;
+    }
+
+    public boolean isUserIdValid(Integer userID, List<User> userList) {
+        boolean isValid = false;
+        for(User currentUser: userList) {
+            if(currentUser.getId().intValue() == userID.intValue()) {
+                return isValid = true;
+            }
+        } return isValid;
     }
 
     public Integer getUserIDByAccountID(Integer accountID, List<Account> accountList) {

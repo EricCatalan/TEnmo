@@ -40,9 +40,14 @@ public class TenmoController {
         return accountDAO.getAccountBalanceByUser(principal);
     }
 
-    @RequestMapping(value= "/users/all", method = RequestMethod.GET)
-    public List<User> userList (Principal principal){
+    @RequestMapping(value = "users/all", method = RequestMethod.GET)
+    public List<User> allUsers(Principal principal) {
         return userDao.findAllUsers(principal);
+    }
+
+    @RequestMapping(value = "/users/all_non_active", method = RequestMethod.GET)
+    public List<User> otherUserList (Principal principal){
+        return userDao.findAllOtherUsers(principal);
     }
 
     @RequestMapping(path = "/accounts", method = RequestMethod.GET)
@@ -56,7 +61,21 @@ public class TenmoController {
         try {
             transferDAO.createTransfer(transfer, principal);
         }catch(Exception ex){
-            System.out.println(ex.getStackTrace());
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "transfers/pending", method = RequestMethod.GET)
+    public List<Transfer> listPendingTransfers(Principal principal) {
+        return transferDAO.listPendingTransfers(principal);
+    }
+
+    @RequestMapping(value = "transfers/request", method = RequestMethod.POST)
+    public void requestTransfer(@RequestBody Transfer transfer, Principal principal) {
+        try {
+            transferDAO.requestTransfer(transfer, principal);
+        } catch(Exception ex) {
+            System.out.println(ex.getMessage());
         }
     }
 

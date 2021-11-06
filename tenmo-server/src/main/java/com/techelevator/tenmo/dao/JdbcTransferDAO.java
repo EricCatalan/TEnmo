@@ -29,36 +29,20 @@ public class JdbcTransferDAO implements TransferDAO {
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
-         jdbcTemplate.update(sql,2, transfer.getTransferStatusID(), transfer.getAccountFromID(), transfer.getAccountToID(), transfer.getAmount());
-        // transfer.setTransferID(transferID);
-        // We set jdbctemp to transferID, returning transferID in sql statement
+        jdbcTemplate.update(sql,2, transfer.getTransferStatusID(), transfer.getAccountFromID(), transfer.getAccountToID(), transfer.getAmount());
         accountDAO.sendMoney(transfer.getAmount(), transfer.getAccountToID());
         accountDAO.removeMoney(transfer.getAmount(), principal);
     }
 
-//    @Override
-//    public Transfer getTransferByID(int id){
-//        Transfer transfer = null;
-//        String sql = "Select transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
-//                "From transfers where transfer_id = ?";
-//        try{
-//            SqlRowSet results = jdbcTemplate.queryForRowSet(sql,id);
-//            if(results.next()){
-//                transfer = mapRowToTransfer(results);
-//            }
-//        }catch(NullPointerException npe){
-//
-//        }return transfer;
-//    }
-
-
 
 
     @Override
-    public void requestMoneyFromUser( Account senderAccount, int amount) {
+    public void requestTransfer(Transfer transfer, Principal principal) {
+        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
+        jdbcTemplate.update(sql,1, transfer.getTransferStatusID(), transfer.getAccountFromID(), transfer.getAccountToID(), transfer.getAmount());
     }
-
 
     @Override
     public List<Transfer> listUserTransfers(Principal principal) {
@@ -91,6 +75,23 @@ public class JdbcTransferDAO implements TransferDAO {
         }
 
         return userTransfers;
+    }
+
+    @Override
+    public List<Transfer> listPendingTransfers(Principal principal) {
+        List<Transfer> transferList = new ArrayList<>();
+        String sql = "SELECT transfer_id, " +
+                "transfer_type_id, " +
+                "transfer_status_id, " +
+                "account_from, " +
+                "account_to, " +
+                "amount " +
+                "FROM transfers WHERE transfer_type_id = 1;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while(results.next()){
+            Transfer transfer = mapRowToTransfer(results);
+            transferList.add(transfer);
+        }return transferList;
     }
 
     @Override
