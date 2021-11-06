@@ -92,4 +92,12 @@ public class TenmoController {
     @RequestMapping(value = "transfers", method = RequestMethod.GET)
     public List<Transfer> listAllTransfers(Principal principal){return transferDAO.listAllTransfers();}
 
+    @RequestMapping(value = "transfers/pending/approve", method = RequestMethod.PUT)
+    public void approveTransfer(@RequestBody Transfer transfer, Principal principal){
+        transferDAO.approveTransfer(transfer,principal);
+    }
+    @RequestMapping(value = "transfers/pending/reject", method = RequestMethod.PUT)
+    public void rejectTransfer(@RequestBody Transfer transfer, Principal principal){
+        transferDAO.rejectTransfer(transfer,principal);
+    }
 }

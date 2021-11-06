@@ -86,7 +86,7 @@ public class JdbcTransferDAO implements TransferDAO {
                 "account_from, " +
                 "account_to, " +
                 "amount " +
-                "FROM transfers WHERE transfer_type_id = 1;";
+                "FROM transfers WHERE transfer_status_id = 1;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
         while(results.next()){
             Transfer transfer = mapRowToTransfer(results);
@@ -128,7 +128,19 @@ public class JdbcTransferDAO implements TransferDAO {
             transferList.add(transfer);
         }return transferList;
     }
+    @Override
+    public void approveTransfer(Transfer pendingTransfer, Principal principal){
+        String sql = "UPDATE transfers " + "SET transfer_status_id = 2 " + "WHERE transfer_id = ? ;";
+        jdbcTemplate.update(sql,pendingTransfer.getTransferID());
+        accountDAO.sendMoney(pendingTransfer.getAmount(), pendingTransfer.getAccountToID());
+        accountDAO.removeMoney(pendingTransfer.getAmount(), principal);
 
+    }
+    @Override
+    public void rejectTransfer(Transfer pendingTransfer, Principal principal){
+        String sql = "UPDATE transfers " + "SET transfer_status_id = 3 " + "WHERE transfer_id = ? ;";
+        jdbcTemplate.update(sql,pendingTransfer.getTransferID());
+    }
 
     private Transfer mapRowToTransfer(SqlRowSet rowset) {
         Transfer transfer = new Transfer();

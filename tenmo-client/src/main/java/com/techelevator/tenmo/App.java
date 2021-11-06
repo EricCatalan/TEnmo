@@ -25,7 +25,12 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private static final String MAIN_MENU_OPTION_LOGIN = "Login as different user";
 	private static final String MAIN_MENU_OPTION_VIEW_TRANSFER = "View transfer by id";
 	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_VIEW_TRANSFER, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
-	
+
+	private static final String PENDING_REQUEST_APPROVE = "Approve";
+	private static final String PENDING_REQUEST_REJECT = "Reject";
+	private static final String PENDING_REQUEST_DO_NOTHING = "Don't approve or reject";
+	private static final String [] PENDING_REQUEST_OPTIONS = {PENDING_REQUEST_APPROVE,PENDING_REQUEST_REJECT, PENDING_REQUEST_DO_NOTHING};
+
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
@@ -120,6 +125,12 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewTransferHistory() {
 
+		if(transferService.listUserTransfers(currentUser.getToken()).size() == 0) {
+			System.out.println("You have no transfer history");
+			mainMenu();
+		}
+
+
 		System.out.println("----------------------------------");
 		System.out.println("Transfers");
 		System.out.println("ID         From/To        Amount");
@@ -128,18 +139,14 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		for(Transfer transfer: transferService.listUserTransfers(currentUser.getToken())) {
 			int userId = userService.getUserIDByAccountID(transfer.getAccountToID(), userService.listUserAccounts(currentUser.getToken()));
 
-			if(transferService.listUserTransfers(currentUser.getToken()).size() == 0) {
-				System.out.println("You have no transfer history");
-				mainMenu();
-			}
 
-			if (transfer.getTransferTypeID() == 2 && (transfer.getAccountFromID().intValue() == userService.getAccountByUserID(currentUser.getUser().getId(),accountList).getAccountID().intValue())) {
+			if (transfer.getTransferStatusID() == 2 && (transfer.getAccountFromID().intValue() == userService.getAccountByUserID(currentUser.getUser().getId(),accountList).getAccountID().intValue())) {
 				System.out.println(transfer.getTransferID() +
 						"       " + "To: " + userService.getUser(userId, userService.listOtherUsers(currentUser.getToken())).getUsername() +
 						"       " + "$" + String.format("%.2f", transfer.getAmount()));
 			}
 
-			if (transfer.getTransferTypeID() == 2 && (transfer.getAccountToID().intValue() == userService.getAccountByUserID(currentUser.getUser().getId(),accountList).getAccountID().intValue())) {
+			if (transfer.getTransferStatusID() == 2 && (transfer.getAccountToID().intValue() == userService.getAccountByUserID(currentUser.getUser().getId(),accountList).getAccountID().intValue())) {
 				System.out.println(transfer.getTransferID() +
 						"       " + "From: " + userService.getUser(userService.getUserIDByAccountID(transfer.getAccountFromID(), userService.listUserAccounts(currentUser.getToken())), userService.listOtherUsers(currentUser.getToken())).getUsername() +
 						"       " + "$" + String.format("%.2f", transfer.getAmount()));
@@ -154,7 +161,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("ID         To        Amount");
 		System.out.println("----------------------------------");
 
-		for(Transfer transfer: transferService.listUserTransfers(currentUser.getToken())) {
+		//changing listusertransfers to pending
+		for(Transfer transfer: transferService.listPendingTransfers(currentUser.getToken())) {
 			int userId = userService.getUserIDByAccountID(transfer.getAccountToID(), userService.listUserAccounts(currentUser.getToken()));
 
 			if(transferService.listUserTransfers(currentUser.getToken()).size() == 0) {
@@ -170,14 +178,14 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		}
 
-		int transferID = console.getUserInputInteger("\n Please enter transfer ID to approve/reject (0 to cancel)");
+		int transferID = console.getUserInputInteger("\nPlease enter transfer ID to approve/reject (0 to cancel)");
 		if(transferID == 0) {
 			mainMenu();
 		}
 
 		for(Transfer transfer: transferService.listPendingTransfers(currentUser.getToken())) {
 			if(transferID == transfer.getTransferID().intValue()) {
-				approveOrRejectPendingTransaction();
+				approveOrRejectPendingTransfer(transferID);
 				mainMenu();
 			}
 		}
@@ -185,8 +193,22 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		mainMenu();
 	}
 
-	private void approveOrRejectPendingTransaction() {
-		System.out.println("Thank you");
+	private void approveOrRejectPendingTransfer(int transferID) {
+		String choice = (String) console.getChoiceFromOptions(PENDING_REQUEST_OPTIONS);
+    	if(PENDING_REQUEST_APPROVE.equals(choice)){
+    		transferService.approveTransfer(transferService.getTransferByID(transferID,transferList), currentUser.getToken());
+
+		}
+    	else if(PENDING_REQUEST_REJECT.equals(choice)){
+			transferService.rejectTransfer(transferService.getTransferByID(transferID,transferList), currentUser.getToken());
+		}
+    	else if (PENDING_REQUEST_DO_NOTHING.equals(choice)){
+    		mainMenu();
+
+		}else{
+			System.out.println("You entered an invalid option");
+			mainMenu();
+		}
 	}
 
 	private void sendBucks() {

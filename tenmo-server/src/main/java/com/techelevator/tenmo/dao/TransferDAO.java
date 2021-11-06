@@ -21,5 +21,9 @@ public interface TransferDAO {
 
     public List<Transfer> listAllTransfers();
 
+    public void approveTransfer(Transfer pendingTransfer, Principal principal);
+
+    public void rejectTransfer(Transfer pendingTransfer, Principal principal);
+
 
 }

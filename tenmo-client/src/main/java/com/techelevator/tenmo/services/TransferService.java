@@ -34,6 +34,14 @@ public class TransferService {
         HttpEntity<Transfer> entity = new HttpEntity<>(transfer, authHeaders(authToken));
         ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfers/request", HttpMethod.POST, entity, Transfer.class);
     }
+    public void approveTransfer(Transfer transfer, String authToken){
+        HttpEntity<Transfer> entity =new HttpEntity<>(transfer, authHeaders(authToken));
+        ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfers/pending/approve", HttpMethod.PUT, entity, Transfer.class);
+    }
+    public void rejectTransfer(Transfer transfer, String authToken){
+        HttpEntity<Transfer> entity =new HttpEntity<>(transfer, authHeaders(authToken));
+        ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfers/pending/reject", HttpMethod.PUT, entity, Transfer.class);
+    }
 
     public List<Transfer> listUserTransfers(String authToken) {
         HttpEntity<Transfer> entity = new HttpEntity<>(authHeaders(authToken));
@@ -65,8 +73,8 @@ public class TransferService {
 
     public List<Transfer> listPendingTransfers(String authToken){
         HttpEntity<Transfer> entity = new HttpEntity<>(authHeaders(authToken));
-        Transfer[] allTransfers = restTemplate.exchange(baseUrl +"transfers/pending", HttpMethod.GET,entity, Transfer[].class).getBody();
-        return Arrays.asList(allTransfers);
+        Transfer[] pendingTransfers = restTemplate.exchange(baseUrl +"transfers/pending", HttpMethod.GET,entity, Transfer[].class).getBody();
+        return Arrays.asList(pendingTransfers);
     }
 
     public boolean isTransferIdValid(Integer transferId, List<Transfer> transferList) {
