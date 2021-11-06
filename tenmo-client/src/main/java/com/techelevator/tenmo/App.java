@@ -25,7 +25,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private static final String MAIN_MENU_OPTION_REQUEST_BUCKS = "Request TE bucks";
 	private static final String MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS = "View your pending requests";
 	private static final String MAIN_MENU_OPTION_LOGIN = "Login as different user";
-	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
+	private static final String MAIN_MENU_OPTION_VIEW_TRANSFER = "View transfer by id";
+	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_VIEW_TRANSFER, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
 	
     private AuthenticatedUser currentUser;
     private ConsoleService console;
@@ -33,8 +34,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private UserService userService;
     private TransferService transferService;
     private List<Account> accountList;
+	private List<Transfer> transferList;
 
-//    private Account userAccount = new Account(,currentUser.getUser().getId());
     
 
     public static void main(String[] args) {
@@ -55,7 +56,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("*********************");
 		
 		registerAndLogin();
-
+		transferList = transferService.listAllTransfers(currentUser.getToken());
 		accountList = userService.listUserAccounts(currentUser.getToken());
 		mainMenu();
 	}
@@ -67,7 +68,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				viewCurrentBalance();
 			} else if(MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS.equals(choice)) {
 				viewTransferHistory();
-			} else if(MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS.equals(choice)) {
+			} else if(MAIN_MENU_OPTION_VIEW_TRANSFER.equals(choice)) {
+				viewSingleTransfer();
+			}else if(MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS.equals(choice)) {
 				viewPendingRequests();
 			} else if(MAIN_MENU_OPTION_SEND_BUCKS.equals(choice)) {
 				sendBucks();
@@ -85,6 +88,28 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void viewCurrentBalance() {
 		System.out.println("Your current balance is: $" + String.format("%.2f",(userService.getAccountBalance(currentUser.getToken()))));
 	}
+	private void viewSingleTransfer(){
+    	int transferID= console.getUserInputInteger("Please enter the transfer ID you wish to search");
+    	Transfer transfer=  transferService.getTransferByID(transferID, transferList);
+		System.out.println("-----------------");
+		System.out.println("Transfer Details");
+		System.out.println("-----------------");
+		System.out.println("Id:  " + transfer.getTransferID() );
+		System.out.println("From:  " + userService.getUser(userService.getUserIDByAccountID(transfer.getAccountFromID(), userService.listUserAccounts(currentUser.getToken())), userService.listUsers(currentUser.getToken())).getUsername() );
+		System.out.println("To:  " + userService.getUser(userService.getUserIDByAccountID(transfer.getAccountToID(), userService.listUserAccounts(currentUser.getToken())), userService.listUsers(currentUser.getToken())).getUsername() );
+		if(transfer.getTransferTypeID().intValue() == 2 ){
+		System.out.println("Type:  Send");}
+		else{
+			System.out.println("Type:  Request");
+		}
+		if(transfer.getTransferStatusID().intValue() == 1){
+		System.out.println("Status:  Pending");}
+		else if(transfer.getTransferStatusID().intValue() == 2){
+			System.out.println("Status:  Approved");}
+		else if(transfer.getTransferStatusID().intValue() == 3){
+			System.out.println("Status:  Rejected");}
+		System.out.println("Amount:  $" + String.format("%.2f", transfer.getAmount()) );
+	}
 
 	private void viewTransferHistory() {
 		for(Transfer transfer: transferService.listUserTransfers(currentUser.getToken())) {
@@ -94,18 +119,17 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				System.out.println("You have no transfer history");
 			}
 
-			else if (transfer.getTransferTypeID() == 2) {
-				System.out.println(transfer.getTransferID());
-				System.out.println("To: " + userService.getUser(userId, userService.listUsers(currentUser.getToken())).getUsername());
-				System.out.println("$" + transfer.getAmount());
+			else if (transfer.getTransferTypeID() == 2 && ( transfer.getAccountFromID().intValue() == userService.getAccountByUserID(currentUser.getUser().getId(),accountList).getAccountID().intValue())) {
+				System.out.println(transfer.getTransferID() +
+						"         " + "To: " + userService.getUser(userId, userService.listUsers(currentUser.getToken())).getUsername() +
+						"       " + "$" + String.format("%.2f", transfer.getAmount()));
 			}
 
-			else if (transfer.getTransferTypeID() == 1) {
-				System.out.println(transfer.getTransferID());
-				System.out.println("From: " + userService.getUser(userService.getUserIDByAccountID(transfer.getAccountFromID(), userService.listUserAccounts(currentUser.getToken())), userService.listUsers(currentUser.getToken())).getUsername());
-				System.out.println("$" + transfer.getAmount());
-
-			}
+			else if (transfer.getTransferTypeID() == 1 && ( transfer.getAccountToID().intValue() == userService.getAccountByUserID(currentUser.getUser().getId(),accountList).getAccountID().intValue())) {
+				System.out.println(transfer.getTransferID() +
+						"         " + "From: " + userService.getUser(userService.getUserIDByAccountID(transfer.getAccountFromID(), userService.listUserAccounts(currentUser.getToken())), userService.listUsers(currentUser.getToken())).getUsername() +
+						"       " + "$" + String.format("%.2f", transfer.getAmount()));
+							}
 		}
 		
 	}

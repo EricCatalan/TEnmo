@@ -51,7 +51,7 @@ public class TenmoController {
         return accountDAO.listAccounts();
     }
 
-    @RequestMapping(value = "/transfers", method = RequestMethod.POST)
+    @RequestMapping(value = "/transfers/execute", method = RequestMethod.POST)
     public void makeTransfer(@Valid @RequestBody Transfer transfer, Principal principal) {
         try {
             transferDAO.createTransfer(transfer, principal);
@@ -64,5 +64,13 @@ public class TenmoController {
     public List<Transfer> listUserTransfers(Principal principal) {
         return transferDAO.listUserTransfers(principal);
     }
+
+    @RequestMapping(value = "transfers/{id}", method = RequestMethod.GET)
+    public Transfer getTransferByID (@PathVariable int id, Principal principal){
+        return transferDAO.getTransferDetailsByID(id, principal);
+    }
+
+    @RequestMapping(value = "transfers", method = RequestMethod.GET)
+    public List<Transfer> listAllTransfers(Principal principal){return transferDAO.listAllTransfers();}
 
 }

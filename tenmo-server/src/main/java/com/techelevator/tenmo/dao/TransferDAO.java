@@ -15,6 +15,6 @@ public interface TransferDAO {
 
     public List<Transfer> listUserTransfers(Principal principal);
 
-    public Transfer getTransferDetailsByID(int id);
-
+    public Transfer getTransferDetailsByID(int id, Principal principal);
+    public List<Transfer> listAllTransfers();
 }

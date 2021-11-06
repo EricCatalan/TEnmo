@@ -9,6 +9,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,7 @@ public class TransferService {
 
     public void createTransfer(Transfer transfer, String authToken) {
         HttpEntity<Transfer> entity = new HttpEntity<>(transfer, authHeaders(authToken));
-        ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, entity, Transfer.class);
+        ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfers/execute", HttpMethod.POST, entity, Transfer.class);
     }
 
     public List<Transfer> listUserTransfers(String authToken) {
@@ -37,6 +38,22 @@ public class TransferService {
             System.out.println("You have no transfer history");
         }
 
+        return Arrays.asList(allTransfers);
+    }
+
+    public Transfer getTransferByID(int transferID, List<Transfer> allTransfers){
+        Transfer transfer = null;
+        for(Transfer currentTransfer: allTransfers){
+            if(transferID == currentTransfer.getTransferID()){
+                transfer = currentTransfer;
+            }
+        }return transfer;
+
+    }
+
+    public List<Transfer> listAllTransfers(String authToken){
+        HttpEntity<Transfer> entity = new HttpEntity<>(authHeaders(authToken));
+        Transfer[] allTransfers = restTemplate.exchange(baseUrl +"transfers", HttpMethod.GET,entity, Transfer[].class).getBody();
         return Arrays.asList(allTransfers);
     }
 
